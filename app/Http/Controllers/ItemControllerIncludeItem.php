@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
-use App\Http\Requests\StoreItemRequest;
-use App\Http\Requests\UpdateItemRequest;
+use App\Models\item;
+use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
@@ -14,7 +13,7 @@ class ItemController extends Controller
     public function index()
     {
         return view("inventory.index", [
-            "items" => Item::paginate(7)
+            "items" => Item::all()
         ]);
     }
 
@@ -29,8 +28,13 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreItemRequest $request)
+    public function store(Request $request)
     {
+        $request->validate([
+            "name" => "required|min:3|max:50|unique:items,name",
+            "price" => "required|numeric|gte:50",
+            "stock" => "required|numeric|gt:3"
+        ]);
         $item = new Item();
         $item->name = $request->name;
         $item->price = $request->price;
@@ -42,7 +46,7 @@ class ItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Item $item)
+    public function show(item $item)
     {
         return view('inventory.show', ["item" => $item]);
     }
@@ -50,7 +54,7 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Item $item)
+    public function edit(item $item)
     {
         return view('inventory.edit', compact('item'));
     }
@@ -58,7 +62,7 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateItemRequest $request, Item $item)
+    public function update(Request $request, item $item)
     {
         $item->name = $request->name;
         $item->price = $request->price;
@@ -70,7 +74,7 @@ class ItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Item $item)
+    public function destroy(item $item)
     {
         $item->delete();
         return redirect()->back();
