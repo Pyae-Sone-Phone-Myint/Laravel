@@ -27,4 +27,14 @@ class StoreItemRequest extends FormRequest
             "stock" => "required|numeric|gt:3"
         ];
     }
+
+    public function messages():array
+    {
+        return [
+            "name.required" => "Name is required.",
+            "name.min" => "Name must be at least 3 words",
+            "price.required" => "Price is required.",
+            "stock.required" => "Stock is required. "
+        ];
+    }
 }

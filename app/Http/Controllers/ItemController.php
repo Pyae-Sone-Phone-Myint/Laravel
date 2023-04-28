@@ -36,7 +36,7 @@ class ItemController extends Controller
         $item->price = $request->price;
         $item->stock = $request->stock;
         $item->save();
-        return redirect()->route('item.index');
+        return redirect()->route('item.index')->with('status',"New Item Created");
     }
 
     /**
@@ -64,7 +64,7 @@ class ItemController extends Controller
         $item->price = $request->price;
         $item->stock = $request->stock;
         $item->update();
-        return redirect()->route('item.index');
+        return redirect()->route('item.index')->with("status", "Item Update Successful");
     }
 
     /**
@@ -73,6 +73,6 @@ class ItemController extends Controller
     public function destroy(Item $item)
     {
         $item->delete();
-        return redirect()->back();
+        return redirect()->back()->with("status", "Item Deleted");
     }
 }
