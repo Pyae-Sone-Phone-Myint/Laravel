@@ -13,9 +13,45 @@ class ItemController extends Controller
      */
     public function index()
     {
-        return view("inventory.index", [
-            "items" => Item::paginate(7)
-        ]);
+        // $items = Item::all()->max("price", 5); //Using Collection Methods
+
+        // $items = Item::where("price", ">", 900)->orWhere("stock", "<", 10)->get(); // Using query builder
+
+        // $items = Item::all();
+
+        // $newItems = $items->map(function ($item) {
+        //     $item->price += 300;
+        //     $item->stock -= 3;
+        //     return $item;
+        // });
+
+        // return $newItems;
+
+        // $items = Item::when(true,function($query) {
+        //     $query->where("id", 5);
+        // })->get();
+
+        // $items = Item::limit(5)->offset(10)->orderBy("id","desc")->get();
+
+        // $items = Item::where("id",">", 50)->firstOrFail();
+
+        // dd($items);
+        // return ($items); // Can use collection method as show collection
+        // return view("inventory.index", [
+        //     "items" => Item::paginate(7)
+        // ]);
+
+        $items = Item::when(request()->has("keyword"), function ($query) {
+            $keyword = request()->keyword;
+            $query->where("name", "like", "%" . $keyword . "%");
+            $query->orWhere("price", "like", "%" . $keyword . "%");
+            $query->orWhere("stock", "like", "%" . $keyword . "%");
+        })->when(request()->has('name'), function ($query) {
+            $sortType = request()->name ?? 'asc';
+            $query->orderBy("name", $sortType);
+        })->paginate(7)->withQueryString();
+
+        return view("inventory.index", compact("items"));
     }
 
     /**
@@ -36,7 +72,7 @@ class ItemController extends Controller
         $item->price = $request->price;
         $item->stock = $request->stock;
         $item->save();
-        return redirect()->route('item.index')->with('status',"New Item Created");
+        return redirect()->route('item.index')->with('status', "New Item Created");
     }
 
     /**
