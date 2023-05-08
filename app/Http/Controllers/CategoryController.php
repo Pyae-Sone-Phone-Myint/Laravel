@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -13,7 +13,15 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return view('category.index', ['categories' => Category::paginate(7)]);
+        $categories = Category::when(request()->has('keyword'), function ($query) {
+            $keyword = request()->keyword;
+            $query->where("title", "like", "%" . $keyword . "%");
+        })->when(request()->has('title'), function ($query) {
+            $sortBy = request()->title;
+            $query->orderBy('title', $sortBy);
+        })->paginate(7)->withQueryString();
+
+        return view('category.index', compact('categories'));
     }
 
     /**
@@ -27,62 +35,48 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validators = Validator::make($request->all(),[
-            "title" => "required",
-            "description" => "required",
-        ]);
-
-        if($validators->fails()){
-            return redirect()->back()->withErrors($validators);
-        }
-
         $category = new Category();
         $category->title = $request->title;
         $category->description = $request->description;
         $category->save();
-        return redirect()->route('category.index');
+        return redirect()->route('category.index')->with("status", "New category is created");
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
-        // $item = Category::findOrFail($id);
-        // return $item;
-        return view('category.show', ["category" => Category::findOrFail($id)]);
+        return view('category.show', ["category" => $category]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Category $category)
     {
-        return view('category.edit', ["category" => Category::findOrFail($id)]);
-
+        return view('category.edit', ["category" => $category]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $category = Category::findOrFail($id);
         $category->title = $request->title;
         $category->description = $request->description;
         $category->update();
-        return redirect()->route('category.index');
+        return redirect()->route('category.index')->with('status', "Updated category");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        $category = Category::findOrFail($id);
         $category->delete();
-        return redirect()->back();
+        return redirect()->back()->with('status', "Deleted category");
     }
 }
