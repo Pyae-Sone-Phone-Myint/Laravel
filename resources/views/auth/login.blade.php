@@ -10,6 +10,8 @@
         <div class="alert alert-success">{{ session('message') }}</div>
     @endif
     <h4>Login page</h4>
+    <hr>
+
     <form action="{{route("auth.check")}}" method="POST">
         @csrf
         <div class=" mb-3">
@@ -29,6 +31,6 @@
             @enderror
         </div>
         <button class="btn btn-primary">Login</button>
+        <a href="{{route('auth.forgot')}}">Forgot password</a>
     </form>
-    <hr>
 @endsection

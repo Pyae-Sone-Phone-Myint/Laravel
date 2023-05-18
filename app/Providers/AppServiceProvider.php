@@ -22,8 +22,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
-        Blade::if('user',function(){
+        Blade::if('user', function () {
             return session('auth') ? true : false;
+        });
+        Blade::if('notUser', function () {
+            return !session('auth');
         });
     }
 }

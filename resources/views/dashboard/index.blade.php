@@ -3,6 +3,9 @@
 @section('title')
     Dashboard
 @endsection
+@if (is_null(session('auth')->email_verified_at))
+    <div class="alert alert-success">{{ session('message') }}</div>
+@endif
 
 @section('content')
     <h4>Dashboard Home Page</h4>
@@ -13,6 +16,7 @@
     @if (session('auth'))
         <div class="alert alert-info">{{ session('auth')->name }}</div>
     @endif
+
 
     <form action="{{ route('auth.logout') }}" method="POST">
         @csrf
