@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\ItemApiController;
-use Illuminate\Http\Request;
+use App\Http\Middleware\ApiAuthenticated;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,4 +24,12 @@ use Illuminate\Support\Facades\Route;
 // Route::apiResource("book",BookController::class);
 
 // Route::apiResource('item', ItemApiController::class)->middleware('cat');
-Route::apiResource('item', ItemApiController::class);
+
+Route::prefix("v1")->group(function () {
+    Route::apiResource('item', ItemApiController::class)->middleware(ApiAuthenticated::class);
+    Route::controller(AuthController::class)->group(function () {
+        Route::post("register", "register")->name("api.auth.register");
+        Route::post("login", "login")->name("api.auth.login");
+        Route::post("logout", "logout")->name("api.auth.logout")->middleware(ApiAuthenticated::class);
+    });
+});

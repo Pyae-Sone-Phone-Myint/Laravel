@@ -15,7 +15,7 @@ class ItemApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware("cat")->only("show");
+        // $this->middleware("cat")->only("show");
     }
 
     /**
