@@ -26,7 +26,6 @@ class UpdateItemRequest extends FormRequest
             "name" => "required|min:3|max:50|unique:items,name,$id",
             "price" => "required|numeric|gte:50",
             "stock" => "required|numeric|gt:3"
-
         ];
     }
 }

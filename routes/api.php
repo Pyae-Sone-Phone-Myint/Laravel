@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\CategoryApiController;
 use App\Http\Controllers\ItemApiController;
 use App\Http\Middleware\ApiAuthenticated;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix("v1")->group(function () {
     Route::apiResource('item', ItemApiController::class)->middleware(ApiAuthenticated::class);
+    Route::apiResource('category', CategoryApiController::class)->middleware(ApiAuthenticated::class);
     Route::controller(AuthController::class)->group(function () {
         Route::post("register", "register")->name("api.auth.register");
         Route::post("login", "login")->name("api.auth.login");
